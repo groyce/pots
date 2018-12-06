@@ -1,0 +1,1 @@
+web: gunicorn TinyPots.wsgi --log-file -

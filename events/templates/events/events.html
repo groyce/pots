@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div>
+  {% for event in events %}
+    <a href="{{ event.get_absolute_url }}"><h1>{{ event.event_title }}</h1></a>
+    <p>{{ event.start_time }} - {{ event.end_time }}</p>
+    <p>{{ event.location }}</p>
+    <p class="mb-5">{{ event.description }}</p>
+  {% endfor %}
+</div>
+{% endblock %}

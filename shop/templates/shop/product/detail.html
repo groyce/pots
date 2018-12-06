@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {{ product.name }}
+{% endblock %}
+
+{% block content %}
+  <script type="text/javascript">
+    window.onload = function() {
+      document.getElementById("comment-h").style.display = "none";
+      document.getElementById("comment").style.display = "none";
+    }
+
+    function addComment() {
+      document.getElementById("comment-h").style.display = "block";
+      document.getElementById("comment").style.display = "block";
+      document.getElementById("comment-h2").style.display = "none";
+      document.getElementById("update").style.display = "none";
+    }
+  </script>
+
+  <div class="product-detail">
+    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+    <h1>{{ product.name }}</h1>
+    <h2><a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a></h2>
+    {% if product.sale == True %}
+      <p class="price"><del>${{ product.price }}</del></p>
+      <p class="price text-danger">${{ product.sale_price }}</p>
+    {% else %}
+      <p class="price">${{ product.price }}</p>
+    {% endif %}
+    <form action="{% url "cart:cart_add" product.id %}" method="post">
+      {{ cart_product_form }}
+      {% csrf_token %}<br>
+      <input type="submit" value="Add to cart">
+    </form>
+    <br>
+    {{ product.description|linebreaks }}
+    </div>
+  </div>
+  <br><br>
+  <div class="container" style="width: 38%">
+    <button type="button" onclick="addComment()" id="update"
+    class="btn btn-outline-success my-2 my-sm-0">Write Product Review</button>
+
+    {% for comment in comments %}
+      <div class="comment pt-4">
+        <p class="info">
+          <strong>{% render_field comment.name %}</strong>
+          <br>
+          {{ comment.created}}
+        </p>
+        {{ comment.body|linebreaks }}
+      </div>
+    {% empty %}
+      <h2 id="comment-h2" class="pt-2">There are no reviews yet.</h2>
+    {% endfor %}
+
+    {% if new_comment %}
+      <h2>Your comment has been added.</h2>
+    {% else %}
+      <h2 id="comment-h" class="pt-2">Add a new comment</h2>
+      <form action="." id="comment" method="post">
+        {% for cm in comment_form.visible_fields %}
+          <div class="form-group" style="width: 80%;">
+            {{ cm.label_tag }}
+            {% render_field cm class="form-control" %}
+          </div>
+        {% endfor %}
+        {% csrf_token %}
+        <p><input type="submit" value="Add comment"></p>
+      </form>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  Your shopping cart
+{% endblock %}
+
+{% block content %}
+  {% if cart|length > 0 %}
+  <h1>Shopping Cart</h1>
+  <table class="cart">
+    <thead class="border-bottom">
+      <th></th>
+      <th></th>
+      <th>Price</th>
+      <th class="text-right">Quantity</th>
+    </thead>
+  {% endif %}
+    <tbody>
+      {% with total_items=cart|length %}
+        {% if cart|length == 0 %}
+        <div class="container">
+          <h1 class="display-3 text-center">You have no items in cart.</h1>
+        </div>
+        {% else %}
+          {% for item in cart %}
+            {% with product=item.product %}
+              <tr>
+                <td width="10%">
+                  <a href="{{ product.get_absolute_url }}">
+                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                  </a>
+                </td>
+                <td width="70%">
+                  <a href="{{ product.get_absolute_url }}"><h2>{{ product.name }}</h2></a><br>
+                  <a href="{% url "cart:cart_remove" product.id %}">Delete</a>
+                </td>
+                <td>
+                  {% if product.sale == True %}
+                    <del>${{ product.price }}</del>
+                    <br>
+                    <strong class="text-danger">${{ item.price }}</strong>
+                  {% else %}
+                    ${{ item.price }}
+                  {% endif %}
+                </td>
+                <td class="num">
+                  <form action="{% url "cart:cart_add" product.id %}" method="post">
+                    {{ item.update_quantity_form.quantity }}<br><br>
+                    {{ item.update_quantity_form.update }}
+                    <input type="submit" value="Update">
+                    {% csrf_token %}
+                  </form>
+                </td>
+              </tr>
+            {% endwith %}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+  {% if cart|length > 0 %}
+      <tr class="total border-top">
+        <td></td>
+        <td colspan="2"></td>
+      </tr>
+    </tbody>
+  </table>
+  {% with total_items=cart|length %}
+    <h3 class="text-right mb-4 font-weight-bold">Subtotal ({{ total_items }} items): <span class="text-danger">${{ cart.get_total_price }}</span></h3>
+  {% endwith %}
+
+  <p class="text-right">
+    <a href="{% url "shop:product_list" %}" class="button light">Continue shopping</a>
+    <a href="{% url "orders:order_create" %}" class="button">
+      Checkout
+    </a>
+  </p>
+  {% endif %}
+{% endblock %}

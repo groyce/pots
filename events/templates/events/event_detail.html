@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  {{ event.name }}
+{% endblock %}
+
+{% block content %}
+    <div>
+        <a href="{% url "events:events" %}"><h1>{{ event.event_title }}</h1></a>
+        <br>
+        <p>Event Starts: {{ event.start_time }}</p>
+        <p>Event Ends: {{ event.end_time }}</p>
+        <p>Location: {{ event.location }}</p>
+        <br>
+        <p>{{ event.description }}</p>
+    </div>
+{% endblock %}}
